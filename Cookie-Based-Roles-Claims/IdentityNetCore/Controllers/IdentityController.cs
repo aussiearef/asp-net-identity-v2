@@ -114,7 +114,7 @@ public class IdentityController(
         // For custom sign out, use the code below
         // await signInManager.SignOutAsync();
         // return RedirectToAction("Signin");
-        
+
         // or use the code below to let ASP.NET Core take care of sign-out
         return base.SignOut(new AuthenticationProperties
         {

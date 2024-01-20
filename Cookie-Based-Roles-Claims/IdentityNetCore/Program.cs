@@ -2,95 +2,75 @@ using System;
 using IdentityNetCore.Data;
 using IdentityNetCore.Service;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace IdentityNetCore;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
 {
-    public static void Main(string[] args)
-    {
-        CreateHostBuilder(args).Build().Run();
-    }
-
-    public static IHostBuilder CreateHostBuilder(string[] args)
-    {
-        return Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
-    }
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 
-public class Startup
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseAuthorization();
+
+app.MapGet("/hi", () => "Hello!");
+
+app.MapDefaultControllerRoute();
+app.MapRazorPages();
+
+var connString = app.Configuration["ConnectionStrings:Default"];
+var smtp = app.Configuration.GetSection("Smtp");
+ConfigureServices(builder.Services);
+
+
+app.Run();
+
+void ConfigureServices(IServiceCollection services)
 {
-    public Startup(IConfiguration configuration)
+    services.AddDbContext<ApplicationDBContext>(o => o.UseSqlServer(connString));
+    services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDBContext>();
+
+    services.Configure<IdentityOptions>(options =>
     {
-        Configuration = configuration;
-    }
+        options.Password.RequiredLength = 3;
+        options.Password.RequireDigit = true;
+        options.Password.RequireNonAlphanumeric = false;
 
-    public IConfiguration Configuration { get; }
+        options.Lockout.MaxFailedAccessAttempts = 3;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
 
-    // This method gets called by the runtime. Use this method to add services to the container.
-    public void ConfigureServices(IServiceCollection services)
+        options.SignIn.RequireConfirmedEmail = false;
+    });
+
+    services.ConfigureApplicationCookie(option =>
     {
-        var connString = Configuration["ConnectionStrings:Default"];
-        services.AddDbContext<ApplicationDBContext>(o => o.UseSqlServer(connString));
-        services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDBContext>();
+        option.LoginPath = "/Identity/Signin";
+        option.AccessDeniedPath = "/Identity/AccessDenied";
+        option.ExpireTimeSpan = TimeSpan.FromHours(10);
+    });
 
-        services.Configure<IdentityOptions>(options =>
-        {
-            options.Password.RequiredLength = 3;
-            options.Password.RequireDigit = true;
-            options.Password.RequireNonAlphanumeric = false;
+    services.Configure<SmtpOptions>(smtp);
 
-            options.Lockout.MaxFailedAccessAttempts = 3;
-            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
-
-            options.SignIn.RequireConfirmedEmail = false;
-        });
-
-        services.ConfigureApplicationCookie(option =>
-        {
-            option.LoginPath = "/Identity/Signin";
-            option.AccessDeniedPath = "/Identity/AccessDenied";
-            option.ExpireTimeSpan = TimeSpan.FromHours(10);
-        });
-
-        services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
-
-        services.AddSingleton<IEmailSender, SmtpEmailSender>();
-        services.AddAuthorization(option =>
-        {
-            option.AddPolicy("MemberDep", p => { p.RequireClaim("Department", "Tech").RequireRole("Member"); });
-
-            option.AddPolicy("AdminDep", p => { p.RequireClaim("Department", "Tech").RequireRole("Admin"); });
-        });
-        services.AddControllersWithViews();
-    }
-
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    services.AddSingleton<IEmailSender, SmtpEmailSender>();
+    services.AddAuthorization(option =>
     {
-        if (env.IsDevelopment())
-            app.UseDeveloperExceptionPage();
-        else
-            app.UseExceptionHandler("/Home/Error");
-        app.UseStaticFiles();
+        option.AddPolicy("MemberDep", p => { p.RequireClaim("Department", "Tech").RequireRole("Member"); });
 
-        app.UseRouting();
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllerRoute(
-                "default",
-                "{controller=Home}/{action=Index}");
-        });
-    }
+        option.AddPolicy("AdminDep", p => { p.RequireClaim("Department", "Tech").RequireRole("Admin"); });
+    });
+    services.AddControllersWithViews();
 }
