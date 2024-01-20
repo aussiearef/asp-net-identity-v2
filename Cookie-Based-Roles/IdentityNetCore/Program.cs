@@ -18,8 +18,6 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDBContext>();
 
-// As of .NET 6 you must use the below code to configure login and sign-up options. 
-// In ASP.NET Core 3.1 and below, use AddEntityFrameworkStores<ApplicationDBContext>().ConfigureOptions
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequiredLength = 3;
@@ -58,6 +56,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     "default",
-    "{controller=Home}/{action=Index}/{id?}");
+    "{controller=Home}/{action=Index}");
 
 app.Run();
