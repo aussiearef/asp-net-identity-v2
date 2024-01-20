@@ -11,8 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 var connString = builder.Configuration["ConnectionStrings:Default"];
-builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(connString));
-builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDBContext>();
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connString));
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.Configure<IdentityOptions>(options => {
     options.Password.RequiredLength = 3;

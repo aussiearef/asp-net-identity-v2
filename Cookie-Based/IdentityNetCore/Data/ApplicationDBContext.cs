@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IdentityNetCore.Data;
 
-public class ApplicationDBContext : IdentityDbContext
+public class ApplicationDbContext : IdentityDbContext
 {
-    public ApplicationDBContext()
+    public ApplicationDbContext()
     {
     }
 
-    public ApplicationDBContext(DbContextOptions options) : base(options)
+    public ApplicationDbContext(DbContextOptions options) : base(options)
     {
     }
 }
