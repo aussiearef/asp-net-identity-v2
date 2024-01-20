@@ -8,7 +8,7 @@
         <a class="nav-link text-dark" asp-controller="Identity" asp-action="Signout">Sign out</a>
     </li>
     <li class="nav-item">
-        <label>Hello @User.Identity.Name (@User.Claims.FirstOrDefault(c=> c.Type=="Department"))</label>
+        <label>Hello @User.Identity.Name (@User.Claims.FirstOrDefault(c => c.Type == "Department"))</label>
     </li>
 }
 else

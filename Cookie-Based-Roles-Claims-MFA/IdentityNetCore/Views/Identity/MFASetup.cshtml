@@ -1,7 +1,7 @@
 ﻿@model MFAViewModel
 
 <p>
-    Please enter the code below in  your authenticator application.
+    Please enter the code below in your authenticator application.
 </p>
 <p>
     @Model.Token
@@ -10,13 +10,13 @@
     Alternatively, scan the below QRCode with your mobile phone.
 </p>
 
-<div id="qrCode" />
+<div id="qrCode"/>
 
 
-<form asp-controller="Identity" asp-action="MFASetup" method="post">
-    <input type="hidden" asp-for="Token" />
+<form asp-controller="Identity" asp-action="MfaSetup" method="post">
+    <input type="hidden" asp-for="Token"/>
     <div class="form-group">
-        Enter Code: <input type="text" class="form-control" asp-for="Code" />
+        Enter Code: <input type="text" class="form-control" asp-for="Code"/>
     </div>
 
     <button type="submit" class="btn btn-primary">Submit</button>
