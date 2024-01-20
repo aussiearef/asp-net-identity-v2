@@ -26,6 +26,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapGet("/hi", () => "Hello!");
 
