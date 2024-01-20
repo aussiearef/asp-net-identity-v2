@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace IdentityNetCore.Service
+namespace IdentityNetCore.Service;
+
+public interface IEmailSender
 {
-    public interface IEmailSender
-    {
-        Task SendEmailAsync(string fromAddress, string toAddress, string subject, string message);
-    }
+    Task SendEmailAsync(string fromAddress, string toAddress, string subject, string message);
 }
