@@ -1,5 +1,5 @@
 
-# ASP.NET Core Identity Managmen & Security (SECOND EDITION)
+# ASP.NET Core Identity Management & Security
 
 This repository belongs to the below online course about ASP.NET Core's built-in identity and access management system. 
 
