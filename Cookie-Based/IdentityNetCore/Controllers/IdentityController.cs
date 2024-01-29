@@ -32,7 +32,7 @@ public class IdentityController : Controller
     public async Task<IActionResult> Signup(SignupViewModel model)
     {
         if (ModelState.IsValid)
-            if (await _userManager.FindByEmailAsync(model.Email) != null)
+            if (await _userManager.FindByEmailAsync(model.Email) == null)
             {
                 var user = new IdentityUser
                 {
