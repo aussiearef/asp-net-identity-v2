@@ -26,10 +26,10 @@ app.UseHttpsRedirection();
 app.MapPost("/auth",  async (AuthModel model , SignInManager<IdentityUser> signinManager)=>
 {
 
-    var signinResult = await signinManager.PasswordSignInAsync(model.UserName, model.Password, false, true);
+    var signinResult = await signinManager.PasswordSignInAsync(model.UserName!, model.Password!, false, true);
     if (signinResult.Succeeded)
     {
-        var jwt = GenerateJwt(model.UserName);
+        var jwt = GenerateJwt(model.UserName!);
         return jwt;
     }
      
@@ -54,6 +54,26 @@ app.MapPost("/auth",  async (AuthModel model , SignInManager<IdentityUser> signi
     
     // return 403
     throw new Exception("Signin was not successful.");
+});
+
+app.MapGet("/validate", async (string token) =>
+{
+    var key = app.Configuration["EncryptionKey"] ?? "";
+    var keyBytes = Encoding.ASCII.GetBytes(key);
+
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var validationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        RequireExpirationTime = true,
+        ValidateLifetime = true
+    };
+
+    var principal = await tokenHandler.ValidateTokenAsync(token, validationParameters);
+    return principal.Claims;
 });
 
 app.Run();
