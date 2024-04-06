@@ -70,7 +70,13 @@ public class IdentityController(
         var user = await userManager.GetUserAsync(User);
         await userManager.ResetAuthenticatorKeyAsync(user);
         var token = await userManager.GetAuthenticatorKeyAsync(user);
+
+        // The below line creates a QR code for Microsoft Authenticator.
         var qrCodeUrl = $"otpauth://totp/{provider}:{user.Email}?secret={token}&issuer={provider}&digits=6";
+
+        // use the below code for Google Authenticator;
+        // var qrCodeUrl = $"otpauth://totp/{user.Email}?secret={token}&issuer={provider}&digits=6";
+
 
         var model = new MFAViewModel { Token = token, QRCodeUrl = qrCodeUrl };
         return View(model);
